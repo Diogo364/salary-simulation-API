@@ -1,9 +1,12 @@
-from flask import Flask, render_template, url_for, request
-from salary_simulation_API.models.modelos.clt import CLT
 import os
+import env_variables
+from flask import render_template, request
+from salary_simulation_API.models.addapters.inss.adaptador_csv_inss import Adaptador_CSV_INSS
+from salary_simulation_API.models.addapters.ir.adaptador_csv_ir import Adaptador_CSV_IR
+from salary_simulation_API.models.modelos.clt import CLT
+from salary_simulation_API.models.pessoas.pessoa_fisica import Pessoa_Fisica
 
-
-app = Flask(__name__, template_folder='./salary_simulation_API/templates')
+app = env_variables.app
 
 
 @app.route('/')
@@ -26,7 +29,15 @@ def quick_start():
         except KeyError:
             beneficios = None
 
-        clt = CLT(nome, cpf, qtd_dependentes, salario, beneficios)
+        adaptador_inss = Adaptador_CSV_INSS()
+        adaptador_ir = Adaptador_CSV_IR()
+
+        adaptador_inss.set_informacoes(os.path.join(env_variables.DATA_PATH, 'tabela_INSS.csv'))
+        adaptador_ir.set_informacoes(os.path.join(env_variables.DATA_PATH, 'tabela_IR.csv'))
+        pf = Pessoa_Fisica(nome, cpf, qtd_dependentes, salario, adaptador_imposto_ir=adaptador_ir)
+        clt = CLT(pf, adaptador_inss)
+        clt.calcular_imposto()
+        print(clt)
         return "<h1>SUCESSO</h1>"
 
 
