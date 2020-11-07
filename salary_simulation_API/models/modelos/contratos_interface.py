@@ -1,18 +1,16 @@
 import pandas as pd
-from resources.pessoas.pf import PF
-from resources.impostos.inss import INSS
-from resources.impostos.ir import IR
+from salary_simulation_API.models.pessoas.pessoa_fisica import Pessoa_Fisica
+from salary_simulation_API.models.impostos.inss import INSS
 
 
-class CLT(PF, INSS, IR):
+class CLT(Pessoa_Fisica, INSS):
     def __init__(self, nome, cpf, qtd_dependentes, salario, beneficios_incluidos=False):
         self._tabela_imposto = {}
         self.salario_liquido = salario
         self.beneficios = pd.DataFrame(columns=['nome', 'valor', 'tipo'])
         self.beneficios_incluidos = beneficios_incluidos
-        PF.__init__(self, nome, cpf, qtd_dependentes, salario)
+        Pessoa_Fisica.__init__(self, nome, cpf, qtd_dependentes, salario)
         INSS.__init__(self)
-        IR.__init__(self)
 
     def adicionar_beneficios(self, nome, valor, frequencia):
         idx = len(self.beneficios) + 1
@@ -21,8 +19,8 @@ class CLT(PF, INSS, IR):
             self.salario_liquido -= abs(valor)
 
     def calcular_imposto(self):
-        self.salario_liquido -= INSS.calcular_imposto(self, self.salario_liquido)
-        self.salario_liquido -= IR.calcular_imposto(self, self.salario_liquido, dependentes=self.qtd_dependentes)
+        self.salario_liquido -= INSS.calcular_imposto(self.salario_liquido)
+        self.salario_liquido -= Pessoa_Fisica.calcular_imposto(self, self.salario_liquido)
 
     def __repr__(self):
         clt_str = []

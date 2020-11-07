@@ -1,0 +1,35 @@
+{% extends "base_layout.html" %}
+{% block title %}Cadastro{% endblock %}
+{% block content %}
+    <div>
+        <h1 class="bd-title">Entre com suas informações abaixo:<a name="_about"></a></h1>
+        <form method="post">
+            <div class="form-group">
+                <label for="inputNome">Nome</label>
+                <input type="text" class="form-control" name="inputNome" aria-describedby="nomeHelp" placeholder="Ex.: Fulano de Almeida" required>
+            </div>
+            <div class="form-group">
+                <label for="inputCPF">CPF</label>
+                <input type="text" class="form-control" name="inputCPF" onkeypress="$(this).mask('000.000.000-00');" placeholder="Ex.: 000.000.000-00" required>
+            </div>
+            <div class="form-group">
+                <label for="inputSalario">Salário Mensal</label>
+                <div class="input-group mb-2">
+                    <div class="input-group-prepend">
+                        <div class="input-group-text">R$</div>
+                    </div>  
+                    <input type="number" step="0.01" class="form-control" name="inputSalario" min="0" placeholder="1000,00" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-check-label" for="inputDependentes">Quantidade de Dependentes</label>
+                <input type="number" step="1" class="form-control" name="inputDependentes" min="0" value="0" required>
+            </div>
+            <div class="form-check">
+                <input type="checkbox" class="form-check-input" name="hasBeneficio">
+                <label class="form-check-label" for="hasBeneficio" value="False">Possui Benefícios</label>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+{% endblock %}

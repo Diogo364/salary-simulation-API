@@ -1,6 +1,6 @@
-from resources.pessoas.pessoa import Pessoa
+from entities.pessoas.pessoa import Pessoa
 
 
-class PJ(Pessoa):
+class Pessoa_Juridica(Pessoa):
     def __init__(self, nome, cnpj, dependentes):
         super().__init__(nome, cnpj, dependentes)
