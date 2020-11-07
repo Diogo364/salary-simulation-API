@@ -1,0 +1,6 @@
+import os
+
+from flask import Flask
+
+app = Flask(__name__, template_folder='./salary_simulation_API/templates')
+DATA_PATH = os.path.join(app.root_path, 'data')
