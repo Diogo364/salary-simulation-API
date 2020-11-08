@@ -1,11 +1,14 @@
 from abc import ABC
-from salary_simulation_API.models.impostos.calculadora_imposto_interface import Calculadora_Imposto_Interface
+from salary_simulation_API.models.addapters.adaptador_imposto_interface import Adaptador_Imposto_Interface
+from salary_simulation_API.models.impostos.calculadora_de_imposto_interface import Calculadora_de_Imposto_Interface
 
 
-class Calculador_de_Imposto(Calculadora_Imposto_Interface, ABC):
-    def __init__(self, adaptador_imposto):
-        # assert issubclass(Adaptador_Imposto_Interface, type(adaptador_imposto)), 'Precisa de um adaptador que siga a ' \
-        #                                                                    'interface: Adaptador_Imposto_Interface'
+class Calculador_de_Imposto(Calculadora_de_Imposto_Interface, ABC):
+    """
+    Baseada no Design Pattern "Facade", tem o objetivo de ser uma classe gerencial capaz
+    qualquer objeto que herde de Adaptador_Imposto_Interface.
+    """
+    def __init__(self, adaptador_imposto: Adaptador_Imposto_Interface):
         self._adaptador_imposto = adaptador_imposto
         self._imposto_total = 0.0
         self._aliquota_real = 0.0

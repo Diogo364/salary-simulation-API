@@ -1,10 +1,10 @@
 from abc import ABC, abstractmethod
 
 
-class Calculadora_Imposto_Interface(ABC):
+class Calculadora_de_Imposto_Interface(ABC):
 
     @abstractmethod
-    def calcular_imposto(self, *args):
+    def calcular_imposto(self, **kwargs):
         """Cálculo do imposto devido baseado no salario mensal"""
         pass
 

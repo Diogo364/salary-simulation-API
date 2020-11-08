@@ -1,47 +1,28 @@
 import pandas as pd
+
+from salary_simulation_API.models.modelos.contratos import Contratos
 from salary_simulation_API.models.pessoas.pessoa_fisica import Pessoa_Fisica
-from salary_simulation_API.models.impostos.inss import INSS
 
 
-class CLT:
-    def __init__(self, pessoa_fisica, adaptador_imposto_inss, beneficios_incluidos=False):
+class CLT(Contratos):
+    def __init__(self, pessoa_fisica, salario_bruto, dict_impostos, beneficios_incluidos=False):
+        """
+        @type pessoa_fisica: Pessoa_Fisica
+        @type salario_bruto: float
+        @type dict_impostos: dict of Calculador_de_Imposto
+        @param beneficios_incluidos: Boolean se o valor dos benefícios deve ser removido do salário.
+        """
+
         self._pessoa_fisica = pessoa_fisica
-        self._inss = INSS(adaptador_imposto_inss)
-        self.salario_liquido = pessoa_fisica.salario
+        super().__init__(salario_bruto, dict_impostos, self._pessoa_fisica.qtd_dependentes)
         self.beneficios = pd.DataFrame(columns=['nome', 'valor', 'tipo'])
         self.beneficios_incluidos = beneficios_incluidos
-        self.imposto_clt = 0.0
 
     def adicionar_beneficios(self, nome, valor, frequencia):
         idx = len(self.beneficios) + 1
         self.beneficios.loc[idx, ['nome', 'valor', 'frequencia']] = nome, valor, frequencia
         if self.beneficios_incluidos:
             self.salario_liquido -= abs(valor)
-
-    def _calcular_inss(self):
-        self._inss.calcular_imposto(self.salario_liquido)
-        self.salario_liquido -= self._inss.get_imposto_total()
-
-    def _calcular_ir(self):
-        self._pessoa_fisica.calcular_imposto(self.salario_liquido, self._pessoa_fisica.qtd_dependentes)
-        self.salario_liquido -= self._pessoa_fisica.get_imposto_total()
-
-    def calcular_imposto(self):
-        self._calcular_inss()
-        self._calcular_ir()
-
-    def get_salario_bruto(self):
-        return self._pessoa_fisica.salario
-
-    def get_inss(self):
-        return self._inss.get_imposto_total()
-
-    def get_ir(self):
-        return self._pessoa_fisica.get_imposto_total()
-
-    def get_imposto_total(self):
-        imposto_total = self.get_ir() + self.get_ir()
-        return imposto_total
 
     def __repr__(self):
         clt_str = []
@@ -50,19 +31,15 @@ class CLT:
         clt_str.append(f'Nome: {self._pessoa_fisica.nome}')
         clt_str.append(f'CPF: {self._pessoa_fisica.id}')
         clt_str.append(f'Qtd Dependentes: {self._pessoa_fisica.qtd_dependentes}')
-        clt_str.append(f'Salario Bruto: R$ {self._pessoa_fisica.salario:.2f}')
+        clt_str.append(f'Salario Bruto: R$ {self.salario_bruto:.2f}')
         clt_str.append('----' * 7 + '')
         clt_str.append('\t  |IMPOSTOS|')
-        clt_str.append(
-            f'IR: {self._pessoa_fisica.get_aliquota_real() * 100:.2f}% | R$ {self._pessoa_fisica.get_imposto_total():.2f}'
-        )
-        clt_str.append(
-            f'INSS: {self._inss.get_aliquota_real() * 100:.2f}% | R$ {self._inss.get_imposto_total():.2f}'
-        )
-        clt_str.append(
-            f'TOTAL: {self.get_imposto_total() / self._pessoa_fisica.salario * 100:.2f}% | R$ {self.get_imposto_total():.2f}'
-        )
-
+        for nome in self.get_nome_impostos():
+            aliquota = self.get_aliquota_imposto(nome) * 100
+            valor = self.get_valor_imposto(nome)
+            clt_str.append(
+                f'{nome.upper()}: {aliquota:.2f}% | R$ {valor:.2f}'
+            )
         total_beneficios = 0.0
         if self.beneficios.shape[0]:
             clt_str.append('----' * 7 + '')
