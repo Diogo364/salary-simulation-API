@@ -15,12 +15,10 @@ desvantagens e obrigações tributárias de cada modalidade, de forma a
 facilitar a tomada de decisão.   
  
 ## Autor:
-```
-{
-    "autor": "Diogo Telheiro do Nascimento",
-    "github": https://github.com/Diogo364
-}
-```
+- Diogo Telheiro do Nascimento
+    - [Github](https://github.com/Diogo364)
+    - [Linkedin](https://www.linkedin.com/in/diogo-telheiro-do-nascimento-95384a104/)
+
 
 ## Contexto:
 Esse projeto foi desenvolvido como trabalho prático para a disciplina 
