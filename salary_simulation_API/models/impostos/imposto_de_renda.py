@@ -3,7 +3,7 @@ from salary_simulation_API.models.impostos.calculador_de_imposto import Calculad
 
 class Imposto_de_Renda(Calculador_de_Imposto):
     def __init__(self, adaptador_imposto):
-        super().__init__(adaptador_imposto)
+        super().__init__(adaptador_imposto, 2)
 
     def _calcular_percentual_de_imposto(self, salario_mensal):
         self._aliquota_real = self.get_imposto_total() / float(salario_mensal)

@@ -3,7 +3,7 @@ from salary_simulation_API.models.impostos.calculador_de_imposto import Calculad
 
 class INSS(Calculador_de_Imposto):
     def __init__(self, adaptador_imposto):
-        super().__init__(adaptador_imposto)
+        super().__init__(adaptador_imposto, 1)
 
     @staticmethod
     def __valor_aliquota(faixa_atual, excedente_faixa=None):

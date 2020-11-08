@@ -5,7 +5,8 @@ from salary_simulation_API.models.addapters.inss.adaptador_csv_inss import Adapt
 from salary_simulation_API.models.addapters.ir.adaptador_csv_ir import Adaptador_CSV_IR
 from salary_simulation_API.models.impostos.imposto_de_renda import Imposto_de_Renda
 from salary_simulation_API.models.impostos.inss import INSS
-from salary_simulation_API.models.modelos.clt import CLT
+from salary_simulation_API.models.modelos.clt.beneficio import Beneficio
+from salary_simulation_API.models.modelos.clt.clt import CLT
 from salary_simulation_API.models.pessoas.pessoa_fisica import Pessoa_Fisica
 
 app = env_variables.app
@@ -24,6 +25,9 @@ dict_impostos = {
 }
 
 pf = None
+clt = None
+beneficios = []
+
 
 @app.route('/')
 @app.route('/home')
@@ -51,26 +55,38 @@ def cadastro_usuario():
             return redirect(url_for(simular_pj))
 
 
-@app.route('/cadastro/CLT', methods=['GET', 'POST'])
+@app.route('/cadastro/CLT', methods=['GET', 'POST', 'PUT'])
 def simular_clt():
     global pf
+    global clt
+    global beneficios
     global dict_impostos
 
     if request.method == 'GET':
+        if len(request.args) > 0:
+            if all(value != '' for value in request.args.values()):
+                nome = request.args['inputBeneficioNome']
+                valor = request.args['inputBeneficioValor']
+                frequencia = request.args['inputBeneficioFrequencia']
+                try:
+                    descontar = bool(request.args['inputBeneficioDescontar'])
+                except KeyError:
+                    descontar = False
+
+                print('apended')
+                beneficios.append(Beneficio(nome, valor, frequencia, descontar))
+
         if isinstance(pf, Pessoa_Fisica):
-            return render_template('forms/clt_form.html', pf=pf)
+            print(len(beneficios))
+            return render_template('forms/clt_form.html', pf=pf, clt=clt, beneficios=beneficios)
         else:
             return '<h1>PROBLEMA</h1>'
     else:
-        try:
-            beneficios = request.form['hasBeneficios']
-        except KeyError:
-            beneficios = None
         salario_bruto = request.form['inputSalario']
 
-        clt = CLT(pf, salario_bruto, dict_impostos)
+        clt = CLT(pf, salario_bruto, dict_impostos, lista_beneficios=beneficios)
         clt.calcular_imposto_total()
-        return render_template('forms/clt_form.html', pf=pf, clt=clt)
+        return render_template('forms/clt_form.html', pf=pf, clt=clt, beneficios=beneficios)
 
 
 @app.route('/cadastro/PJ', methods=['GET', 'POST'])
