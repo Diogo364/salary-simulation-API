@@ -70,7 +70,6 @@ def simular_clt():
 
         clt = CLT(pf, salario_bruto, dict_impostos)
         clt.calcular_imposto_total()
-        print(clt)
         return render_template('forms/clt_form.html', pf=pf, clt=clt)
 
 
@@ -80,5 +79,4 @@ def simular_pj():
 
 
 if __name__ == '__main__':
-    print(app.root_path)
     app.run()

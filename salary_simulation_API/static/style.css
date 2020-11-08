@@ -1,0 +1,13 @@
+button {
+    margin-top: 10px;
+}
+
+.shorter-8 {
+    max-width: 75%;
+}
+
+.reduced-padding {
+    padding-right: 0;
+    padding-left: 0;
+}
+

@@ -6,25 +6,25 @@
         <form method="post">
             <div class="form-group">
                 <label for="inputNome">Nome</label>
-                <input type="text" class="form-control" name="inputNome" aria-describedby="nomeHelp" placeholder="Ex.: Fulano de Almeida" required>
+                <input type="text" class="form-control shorter-8" name="inputNome" aria-describedby="nomeHelp" placeholder="Ex.: Fulano de Almeida" required>
             </div>
             <div class="form-group">
                 <label for="inputCPF">CPF</label>
-                <input type="text" class="form-control" name="inputCPF" onkeypress="$(this).mask('000.000.000-00');" placeholder="Ex.: 000.000.000-00" required>
+                <input type="text" class="form-control shorter-8" name="inputCPF" onkeypress="$(this).mask('000.000.000-00');" placeholder="Ex.: 000.000.000-00" required>
             </div>
-
-            <div class="form-group">
-                <label class="form-check-label" for="inputDependentes">Quantidade de Dependentes</label>
-                <input type="number" step="1" class="form-control" name="inputDependentes" min="0" value="0" required>
+            <div class="form-row">
+                <div class="col col-md-6">
+                    <label class="form-check-label" for="inputDependentes">Quantidade de Dependentes</label>
+                    <input type="number" step="1" class="form-control shorter-8" name="inputDependentes" min="0" value="0" required>
+                </div>
+                <div class="col col-md-4">
+                    <label class="form-check-label" for="inputModalidadeContrato">Modelo de Contrato</label>
+                    <select class="form-control shorter-8" name="inputModalidadeContrato">
+                        <option>CLT</option>
+                        <option>PJ</option>
+                    </select>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="inputModalidadeContrato">Modelo de Contrato</label>
-                <select class="form-control" name="inputModalidadeContrato">
-                    <option>CLT</option>
-                    <option>PJ</option>
-                </select>
-            </div>
-
             <button type="submit" class="btn btn-primary">Continuar</button>
         </form>
     </div>
