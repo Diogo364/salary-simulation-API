@@ -18,3 +18,10 @@ class Calculador_de_Imposto(Calculadora_de_Imposto_Interface, ABC):
 
     def get_imposto_total(self):
         return self._imposto_total
+
+    def clean_impostos(self):
+        self._imposto_total = 0.0
+        self._aliquota_real = 0.0
+
+    def calcular_imposto(self, **kwargs):
+        self.clean_impostos()

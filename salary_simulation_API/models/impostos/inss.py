@@ -16,6 +16,7 @@ class INSS(Calculador_de_Imposto):
         self._aliquota_real = self.get_imposto_total() / float(salario_mensal)
 
     def calcular_imposto(self, **kwargs):
+        super().calcular_imposto(**kwargs)
         faixas_imposto = self._adaptador_imposto.get_faixas_de_imposto(kwargs['salario_mensal'])
         assert faixas_imposto.shape[0] > 0, 'Verifique a origem dos dados utilizados para carregar as informacões de ' \
                                             'imposto '

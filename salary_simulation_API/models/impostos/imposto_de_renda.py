@@ -9,6 +9,7 @@ class Imposto_de_Renda(Calculador_de_Imposto):
         self._aliquota_real = self.get_imposto_total() / float(salario_mensal)
 
     def calcular_imposto(self, **kwargs):
+        super().calcular_imposto(**kwargs)
         faixa_imposto = self._adaptador_imposto.get_faixas_de_imposto(kwargs['salario_mensal'])
         aliquota, parcela_dedutivel = faixa_imposto[['aliquota', 'parcela_dedutivel']].values[0]
         self._imposto_total = \
