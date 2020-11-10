@@ -65,8 +65,6 @@
 
 {% block table1 %}
     {% if clt %}
-
-        <table class="table table-striped">
         <thead>
         <tr>
             <th scope="col">     </th>
@@ -100,16 +98,24 @@
 {% endblock %}
 
 {% block table2 %}
-    {% if beneficios|length %}
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th scope="col">Nome</th>
-                <th scope="col">Valor</th>
-                <th scope="col">Frequência</th>
-                <th scope="col">Descontar do Bruto</th>
-            </tr>
-            </thead>
-        </table>
-    {% endif %}
+{% if beneficios|length %}
+    <thead>
+    <tr>
+        <th scope="col">Nome</th>
+        <th scope="col">Valor</th>
+        <th scope="col">Frequência</th>
+        <th scope="col">Descontar do Bruto</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for beneficio in beneficios %}
+        <tr>
+            <th scope="col">{{ beneficio.get_nome() }}</th>
+            <th scope="col">{{ "R$%.2f"|format(beneficio.get_valor()) }}</th>
+            <td scope="col">{{ beneficio.get_frequencia() }}</td>
+            <td scope="col">{{ True if beneficio.is_incluido_salario() else False }}</td>
+        </tr>
+    {% endfor %}
+</tbody>
+{% endif %}
 {% endblock %}

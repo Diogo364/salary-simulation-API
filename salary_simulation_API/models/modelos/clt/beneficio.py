@@ -11,7 +11,7 @@ class Beneficio:
     def get_nome(self):
         return self._nome
 
-    def get_tipo(self):
+    def get_frequencia(self):
         return self._frequencia
 
     def is_incluido_salario(self):
