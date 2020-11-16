@@ -1,10 +1,9 @@
 class Beneficio:
-    def __init__(self, nome, valor, desconto, frequencia, incluido_salario=False):
+    def __init__(self, nome, valor, desconto, frequencia):
         self._nome = nome
         self._valor = float(valor)
         self._desconto = float(desconto)
         self._frequencia = frequencia
-        self._incluido_salario = incluido_salario
 
     def get_valor(self):
         return self._valor
@@ -17,9 +16,6 @@ class Beneficio:
 
     def get_frequencia(self):
         return self._frequencia
-
-    def is_incluido_salario(self):
-        return self._incluido_salario
 
     def to_json(self):
         return {

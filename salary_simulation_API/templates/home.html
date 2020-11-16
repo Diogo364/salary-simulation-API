@@ -2,13 +2,70 @@
 {% block title %}Salary Simulation{% endblock %}
 {% block content %}
     <div>
-        <h1 class="bd-title">Sobre</h1>
+        <h2 class="bd-title">Motivação</h2>
+        <p>
+            Hoje, principalmente na área de tecnologia, vivemos em um momento onde
+            a contratação de profissionais não seguem um padrão definido, podendo
+            ser feita nos moldes da legislação trabalhista - CLT - ou como autônomos
+            prestadores de serviço - MEI, ME etc.
+        </p>
+        <p>
+            Com isso surge a necessidade de se entender melhor as vantagens,
+            desvantagens e obrigações tributárias de cada modalidade, de forma a
+            facilitar a tomada de decisão.
+        </p>
+        <h2 class="bd-title">Síntese</h2>
+        <p>
+            Esse trabalho consiste em uma aplicação que realiza a simulação de rendimentos e impostos, afim de
+            facilitar a tomada de decisão na modalidade de contrato selecionado.
+        </p>
+        <h2 class="bd-title">Contexto</h2>
         <p>
             Esse trabalho foi desenvolvido como trabalho final da disciplina de Programação Orientada a Objeto - POO
-            do curso de Bacharelado em Ciência da Computação do IESB.
+            do curso de Bacharelado em Ciência da Computação do IESB e consiste em uma aplicação para a simulação de
+            cálculo de rendimentos e impostos.
+        </p>
+        <h2 class="bd-title">Como Utilizar</h2>
+        <p>
+            Segue abaixo um passo a passo de como utilizar esta aplicação:
+        </p>
+        <ol>
+            <li>Dentro da aba de "Cadastro" você entrará com seus dados pessoais.</li>
+            <li>Após preenxer os dados você entrará com a modalidade de contrato que gostaria de simular.</li>
+            <li>Siga as instruções específicas da modalidade selecionada.</li>
+        </ol>
+        <h3 class="bd-title">CLT</h3>
+        <p>
+            Na modalidade CLT você poderá acrescentar a quantidade de benefícios que quiser para sua simulação.
+            Esses benefícios podem ter custos a serem dedusidos mensalmente do salarios e também podem acrescentar
+            um valor, como tickets alimentação/refeição.
         </p>
         <p>
-            Esse trabalho consiste em uma API para criação de Currículos e seu funcionamento é explicado abaixo.
+            Após acrescentar os benefícios você poderá acrescentar o valor do salario bruto e realizar a simulação
+            utilizando o botão "Simular"
+        </p>
+        <p>
+            <b>Importante:</b> O 13º salário já vem incluído no cálculo por padrão, portanto não se deve
+            acrescentá-lo como benefício
+        </p>
+        <h3 class="bd-title">PJ</h3>
+        <p>
+            Nessa modalidade você só poderá fazer a simulação dos ganhos tomando como base um salário mensal, visto
+            que não existem benefícios extras a serem contabilizados, apenas os impostos que foram deduzídos.
+            Também é importante ressaltar que apenas a modalidade Micro Empreendedor Individual - MEI - está
+            contemplada nesta aplicação, visto a complexidade e a falta de tempo.
+        </p>
+        <p>
+            O MEI é recomendado para ganhos de até R$ 81.000,00 ao ano, ou R$ 6.750,00 ao mês, o que acaba por
+            contemplar grande parte dos cargos Jr. e alguns cargos Plenos para a área de tecnologia.
         </p>
     </div>
+{% endblock %}
+
+{% block footer %}
+    <footer class="footer font-small bg-dark text-white">
+        <div class="footer-copyright text-center py-3">
+            © 2020 Copyright: Diogo Telheiro do Nascimento
+        </div>
+    </footer>
 {% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base_layout.html" %}
+{% block title %}PJ{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col">
+            <h2 class="bd-title">Informações:</h2>
+            <form method="post">
+                <div class="form-group">
+                    <label for="inputNome">Nome</label>
+                    <input type="text" class="form-control" name="inputNome" readonly aria-describedby="nomeHelp" value="{{ pessoa.nome }}">
+                </div>
+                <div class="form-group">
+                    <label for="inputCPF">CNPJ</label>
+                    <input type="text" class="form-control" name="inputId" readonly value="{{ pessoa.id }}">
+                </div>
+                <div class="form-group">
+                    <label class="form-check-label" for="inputDependentes">Quantidade de Dependentes</label>
+                    <input type="number" step="1" class="form-control" readonly name="inputDependentes" min="0" value="{{ pessoa.qtd_dependentes }}">
+                </div>
+                <div class="form-group">
+                    <label for="inputSalario">Salário Mensal</label>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">R$</div>
+                        </div>
+                        <input type="number" step="0.01" class="form-control" name="inputSalario" min="0" placeholder="1000,00" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Simular</button>
+            </form>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block table1 %}
+    {% if contrato %}
+        <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Mensal</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th scope="col">Salário Bruto</th>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_salario_bruto()) }}</td>
+            <td scope="col">100%</td>
+        </tr>
+        <tr>
+            <th scope="col">Salário Líquido</th>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_salario_liquido()) }}</td>
+            <td scope="col">{{ '%.2f'|format((contrato.get_valor_imposto('total')/contrato.get_salario_bruto()*100)|float) }}%</td>
+        </tr>
+        <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">IMPOSTOS MENSAIS</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        {% for nome_imposto in contrato.get_nome_impostos() %}
+            {% if nome_imposto != 'total' %}
+                <tr>
+                    <th scope="col">{{  nome_imposto }}</th>
+                    <td scope="col">{{ "R$%.2f"|format(contrato.get_valor_imposto(nome_imposto)) }}</td>
+                    <td scope="col">{{ '%.2f'|format((contrato.get_aliquota_imposto(nome_imposto)*100)|float) }}%</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">ANUAL</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tr>
+            <th scope="col">Salário Bruto</th>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_salario_bruto(anual=True)) }}</td>
+            <td scope="col">100%</td>
+        </tr>
+        <tr>
+            <th scope="col">Impostos</th>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_valor_imposto('total', anual=True)) }}</td>
+            <td scope="col">{{ '%.2f'|format((contrato.get_valor_imposto('total', anual=True)/contrato.get_salario_bruto(anual=True)*100)|float) }}%</td>
+        </tr>
+        <tr>
+            <th scope="col">Salário Líquido</th>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_salario_liquido(anual=True)) }}</td>
+            <td scope="col">{{ '%.2f'|format((contrato.get_salario_liquido(anual=True)/contrato.get_salario_bruto(anual=True)*100)|float) }}%</td>
+        </tr>
+
+
+    {% endif %}
+
+{% endblock %}
+
+{% block table2 %}
+{% endblock %}

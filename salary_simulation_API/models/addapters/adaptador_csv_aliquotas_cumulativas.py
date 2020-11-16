@@ -2,7 +2,7 @@ import pandas as pd
 from salary_simulation_API.models.addapters.adaptador_imposto_csv_interface import Adaptador_Imposto_CSV_Interface
 
 
-class Adaptador_CSV_INSS(Adaptador_Imposto_CSV_Interface):
+class Adaptador_CSV_Aliquotas_Cumulativas(Adaptador_Imposto_CSV_Interface):
 
     def __init__(self):
         self.__inss_table = None

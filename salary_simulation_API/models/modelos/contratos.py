@@ -10,7 +10,7 @@ class Contratos(Contratos_Interface):
     qualquer objeto que herde de Calculadora_de_Imposto_Interface.
     """
 
-    def __init__(self, pessoa, salario_bruto, impostos, qtd_dependentes, lista_beneficios):
+    def __init__(self, pessoa, salario_bruto, impostos, qtd_dependentes, lista_beneficios, total_meses=12):
         """
         @type pessoa: Pessoa
         @type salario_bruto: float
@@ -25,6 +25,8 @@ class Contratos(Contratos_Interface):
         self.salario_liquido = float(salario_bruto)
         self.qtd_dependentes = qtd_dependentes
         self.lista_beneficios = lista_beneficios
+        self._anual = total_meses
+        self._desconto_total_beneficios = 0
 
     def _append_valor_imposto(self, nome, valor, aliquota):
         self._total_imposto[nome] = {
@@ -62,14 +64,31 @@ class Contratos(Contratos_Interface):
 
     def _descontar_beneficios(self):
         for beneficio in self.lista_beneficios:
-            if beneficio.is_incluido_salario():
-                self.descontar_salario(beneficio.get_descontar())
+            if beneficio.get_frequencia() == 'Mensal':
+                descontar = beneficio.get_descontar()
+            else:
+                descontar = beneficio.get_descontar() / 12
+            self.descontar_salario(descontar)
+            self._desconto_total_beneficios += descontar
+
+    def get_valor_beneficios(self, anual=False):
+        total_beneficios = 0.0
+        for beneficio in self.lista_beneficios:
+            if beneficio.get_frequencia() == 'Mensal':
+                total_beneficios += beneficio.get_valor()
+            else:
+                total_beneficios += beneficio.get_valor() / 12
+        if anual:
+            return total_beneficios * 12
+        else:
+            return total_beneficios
 
     def adicionar_beneficios(self, beneficio):
         self.lista_beneficios.append(beneficio)
 
-    def get_valor_imposto(self, nome):
-        return self._total_imposto[nome]['valor']
+    def get_valor_imposto(self, nome, anual=False):
+        meses = 1 if not anual else self._anual
+        return self._total_imposto[nome]['valor'] * meses
 
     def get_aliquota_imposto(self, nome):
         return self._total_imposto[nome]['aliquota']
@@ -77,11 +96,13 @@ class Contratos(Contratos_Interface):
     def get_nome_impostos(self):
         return (nome for nome in self._total_imposto)
 
-    def get_salario_bruto(self):
-        return self.salario_bruto
+    def get_salario_bruto(self, anual=False):
+        meses = 1 if not anual else self._anual
+        return self.salario_bruto * meses
 
-    def get_salario_liquido(self):
-        return self.salario_liquido
+    def get_salario_liquido(self, anual=False):
+        meses = 1 if not anual else self._anual
+        return self.salario_liquido * meses
 
     def get_nome_pessoa(self):
         return self._pessoa.nome
@@ -91,6 +112,10 @@ class Contratos(Contratos_Interface):
 
     def get_dependentes(self):
         return self._pessoa.qtd_dependentes
+
+    def get_total_desconto_beneficios(self, anual=False):
+        meses = 1 if not anual else self._anual
+        return self._desconto_total_beneficios * meses
 
     def to_json(self):
         serialized = {

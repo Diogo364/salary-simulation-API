@@ -1,7 +1,7 @@
 from salary_simulation_API.models.impostos.calculador_de_imposto import Calculador_de_Imposto
 
 
-class Imposto_de_Renda(Calculador_de_Imposto):
+class IRPF_CLT(Calculador_de_Imposto):
     def __init__(self, adaptador_imposto):
         super().__init__(adaptador_imposto, 2)
 

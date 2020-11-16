@@ -7,15 +7,15 @@
             <form method="post">
                 <div class="form-group">
                     <label for="inputNome">Nome</label>
-                    <input type="text" class="form-control" name="inputNome" readonly aria-describedby="nomeHelp" value="{{ pf.nome }}">
+                    <input type="text" class="form-control" name="inputNome" readonly aria-describedby="nomeHelp" value="{{ pessoa.nome }}">
                 </div>
                 <div class="form-group">
                     <label for="inputCPF">CPF</label>
-                    <input type="text" class="form-control" name="inputCPF" readonly onkeypress="$(this).mask('000.000.000-00');" value="{{ pf.id }}">
+                    <input type="text" class="form-control" name="inputCPF" readonly onkeypress="$(this).mask('000.000.000-00');" value="{{ pessoa.id }}">
                 </div>
                 <div class="form-group">
                     <label class="form-check-label" for="inputDependentes">Quantidade de Dependentes</label>
-                    <input type="number" step="1" class="form-control" readonly name="inputDependentes" min="0" value="{{ pf.qtd_dependentes }}">
+                    <input type="number" step="1" class="form-control" readonly name="inputDependentes" min="0" value="{{ pessoa.qtd_dependentes }}">
                 </div>
                 <div class="form-group">
                     <label for="inputSalario">Salário Mensal</label>
@@ -50,18 +50,13 @@
                         <div class="input-group-prepend">
                             <div class="input-group-text">R$</div>
                         </div>
-                        <input type="number" step="0.01" class="form-control" name="inputBeneficioDesconto" min="0" placeholder="500,00">
+                        <input type="number" step="0.01" class="form-control" name="inputBeneficioDesconto" min="0" value="0">
                     </div>
                     <label class="form-check-label" for="inputBeneficioFrequencia">Frequência</label>
                     <select class="form-control" name="inputBeneficioFrequencia">
-                        <option>Semanal</option>
                         <option selected>Mensal</option>
                         <option>Anual</option>
                     </select>
-                    <div class="form-check">
-                        <input type="checkbox" class="form-check-input" name="inputBeneficioDescontar">
-                        <label class="form-check-label" for="inputBeneficioDescontar" value="False">Descontar do salário bruto</label>
-                    </div>
                 </div>
                 <button type="submit" class="btn btn-success">Adicionar Benefício</button>
             </form>
@@ -71,34 +66,87 @@
 {% endblock %}
 
 {% block table1 %}
-    {% if clt %}
+    {% if contrato %}
         <thead>
         <tr>
-            <th scope="col">     </th>
-            <th scope="col">Valor</th>
-            <th scope="col">Percentual</th>
+            <th scope="col"></th>
+            <th scope="col">Mensal</th>
+            <th scope="col"></th>
         </tr>
         </thead>
         <tbody>
         <tr>
             <th scope="col">Salário Bruto</th>
-            <td scope="col">{{ "R$%.2f"|format(clt.get_salario_bruto()) }}</td>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_salario_bruto()) }}</td>
             <td scope="col">100%</td>
         </tr>
         <tr>
-            <th scope="col">INSS</th>
-            <td scope="col">{{ "R$%.2f"|format(clt.get_valor_imposto('inss')) }}</td>
-            <td scope="col">{{ '%.2f'|format((clt.get_aliquota_imposto('inss')*100)|float) }}%</td>
+            <th scope="col">Impostos</th>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_valor_imposto('total')) }}</td>
+            <td scope="col">{{ '%.2f'|format((contrato.get_valor_imposto('total')/contrato.get_salario_bruto()*100)|float) }}%</td>
         </tr>
         <tr>
-            <th scope="col">IR</th>
-            <td scope="col">{{ "R$%.2f"|format(clt.get_valor_imposto('ir')) }}</td>
-            <td scope="col">{{ '%.2f'|format((clt.get_aliquota_imposto('ir')*100)|float) }}%</td>
+            <th scope="col">Descontos Beneficios</th>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_total_desconto_beneficios()) }}</td>
+            <td scope="col">{{ '%.2f'|format((contrato.get_total_desconto_beneficios()/contrato.get_salario_bruto()*100)|float) }}%</td>
         </tr>
         <tr>
             <th scope="col">Salário Líquido</th>
-            <td scope="col">{{ "R$%.2f"|format(clt.get_salario_liquido()) }}</td>
-            <td scope="col">{{ '%.2f'|format((clt.get_valor_imposto('total')/clt.get_salario_bruto()*100)|float) }}%</td>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_salario_liquido()) }}</td>
+            <td scope="col">{{ '%.2f'|format((contrato.get_valor_imposto('total')/contrato.get_salario_bruto()*100)|float) }}%</td>
+        </tr>
+        <tr>
+            <th scope="col">Salário Líquido +  Valor Beneficios</th>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_salario_liquido() + contrato.get_valor_beneficios()) }}</td>
+            <td scope="col">{{ '%.2f'|format(((contrato.get_salario_liquido() + contrato.get_valor_beneficios())/contrato.get_salario_bruto()*100)|float) }}%</td>
+        </tr>
+        <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">IMPOSTOS MENSAIS</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        {% for nome_imposto in contrato.get_nome_impostos() %}
+            {% if nome_imposto != 'total' %}
+                <tr>
+                    <th scope="col">{{  nome_imposto }}</th>
+                    <td scope="col">{{ "R$%.2f"|format(contrato.get_valor_imposto(nome_imposto)) }}</td>
+                    <td scope="col">{{ '%.2f'|format((contrato.get_aliquota_imposto(nome_imposto)*100)|float) }}%</td>
+                </tr>
+            {% endif %}
+        {% endfor %}
+        <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">ANUAL</th>
+            <th scope="col"></th>
+        </tr>
+        </thead>
+        <tr>
+            <th scope="col">Salário Bruto</th>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_salario_bruto(anual=True)) }}</td>
+            <td scope="col">100%</td>
+        </tr>
+        <tr>
+            <th scope="col">Impostos</th>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_valor_imposto('total', anual=True)) }}</td>
+            <td scope="col">{{ '%.2f'|format((contrato.get_valor_imposto('total', anual=True)/contrato.get_salario_bruto(anual=True)*100)|float) }}%</td>
+        </tr>
+        <tr>
+            <th scope="col">Descontos Beneficios</th>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_total_desconto_beneficios(anual=True)) }}</td>
+            <td scope="col">{{ '%.2f'|format((contrato.get_total_desconto_beneficios(anual=True)/contrato.get_salario_bruto(anual=True)*100)|float) }}%</td>
+        </tr>
+        <tr>
+            <th scope="col">Salário Líquido</th>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_salario_liquido(anual=True)) }}</td>
+            <td scope="col">{{ '%.2f'|format((contrato.get_salario_liquido(anual=True)/contrato.get_salario_bruto(anual=True)*100)|float) }}%</td>
+        </tr>
+        <tr>
+            <th scope="col">Salário Líquido +  Valor Beneficios</th>
+            <td scope="col">{{ "R$%.2f"|format(contrato.get_salario_liquido(anual=True) + contrato.get_valor_beneficios(anual=True)) }}</td>
+            <td scope="col">{{ '%.2f'|format(((contrato.get_salario_liquido(anual=True) + contrato.get_valor_beneficios(anual=True))/contrato.get_salario_bruto(anual=True)*100)|float) }}%</td>
         </tr>
     {% endif %}
 
@@ -112,7 +160,6 @@
             <th scope="col">Valor</th>
             <th scope="col">Descontar</th>
             <th scope="col">Frequência</th>
-            <th scope="col">Descontar do Bruto</th>
         </tr>
         </thead>
         <tbody>
@@ -122,7 +169,6 @@
                 <th scope="col">{{ "R$%.2f"|format(beneficio.get_valor()) }}</th>
                 <th scope="col">{{ "R$%.2f"|format(beneficio.get_descontar()) }}</th>
                 <td scope="col">{{ beneficio.get_frequencia() }}</td>
-                <td scope="col">{{ True if beneficio.is_incluido_salario() else False }}</td>
             </tr>
         {% endfor %}
         </tbody>
