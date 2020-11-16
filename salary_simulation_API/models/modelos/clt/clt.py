@@ -14,15 +14,15 @@ class CLT(Contratos):
         if lista_beneficios is None:
             lista_beneficios = []
         self._pessoa_fisica = pessoa_fisica
-        super().__init__(salario_bruto, dict_impostos, self._pessoa_fisica.qtd_dependentes, lista_beneficios)
+        super().__init__(pessoa_fisica, salario_bruto, dict_impostos, self._pessoa_fisica.qtd_dependentes, lista_beneficios)
 
     def __repr__(self):
         clt_str = []
         clt_str.append('===/' * 6 + '===')
         clt_str.append('\t|INFORMAÇÕES|')
-        clt_str.append(f'Nome: {self._pessoa_fisica.nome}')
-        clt_str.append(f'CPF: {self._pessoa_fisica.id}')
-        clt_str.append(f'Qtd Dependentes: {self._pessoa_fisica.qtd_dependentes}')
+        clt_str.append(f'Nome: {self.get_nome_pessoa()}')
+        clt_str.append(f'CPF: {self.get_id()}')
+        clt_str.append(f'Qtd Dependentes: {self.get_dependentes()}')
         clt_str.append(f'Salario Bruto: R$ {self.salario_bruto:.2f}')
         clt_str.append('----' * 7 + '')
         clt_str.append('\t  |IMPOSTOS|')

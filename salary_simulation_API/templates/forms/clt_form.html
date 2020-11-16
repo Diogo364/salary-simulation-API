@@ -38,12 +38,19 @@
                     <input type="text" class="form-control" name="inputBeneficioNome" aria-describedby="nomeHelp" placeholder="Ex.: Vale-refeição">
                 </div>
                 <div class="form-group">
-                    <label for="inputSalario">Valor</label>
+                    <label for="inputBeneficioValor">Valor do Benefício</label>
                     <div class="input-group mb-2">
                         <div class="input-group-prepend">
                             <div class="input-group-text">R$</div>
                         </div>
                         <input type="number" step="0.01" class="form-control" name="inputBeneficioValor" min="0" placeholder="500,00">
+                    </div>
+                    <label for="inputBeneficioDesconto">Valor a descontar</label>
+                    <div class="input-group mb-2">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">R$</div>
+                        </div>
+                        <input type="number" step="0.01" class="form-control" name="inputBeneficioDesconto" min="0" placeholder="500,00">
                     </div>
                     <label class="form-check-label" for="inputBeneficioFrequencia">Frequência</label>
                     <select class="form-control" name="inputBeneficioFrequencia">
@@ -98,24 +105,26 @@
 {% endblock %}
 
 {% block table2 %}
-{% if beneficios|length %}
-    <thead>
-    <tr>
-        <th scope="col">Nome</th>
-        <th scope="col">Valor</th>
-        <th scope="col">Frequência</th>
-        <th scope="col">Descontar do Bruto</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for beneficio in beneficios %}
+    {% if beneficios|length %}
+        <thead>
         <tr>
-            <th scope="col">{{ beneficio.get_nome() }}</th>
-            <th scope="col">{{ "R$%.2f"|format(beneficio.get_valor()) }}</th>
-            <td scope="col">{{ beneficio.get_frequencia() }}</td>
-            <td scope="col">{{ True if beneficio.is_incluido_salario() else False }}</td>
+            <th scope="col">Nome</th>
+            <th scope="col">Valor</th>
+            <th scope="col">Descontar</th>
+            <th scope="col">Frequência</th>
+            <th scope="col">Descontar do Bruto</th>
         </tr>
-    {% endfor %}
-</tbody>
-{% endif %}
+        </thead>
+        <tbody>
+        {% for beneficio in beneficios %}
+            <tr>
+                <th scope="col">{{ beneficio.get_nome() }}</th>
+                <th scope="col">{{ "R$%.2f"|format(beneficio.get_valor()) }}</th>
+                <th scope="col">{{ "R$%.2f"|format(beneficio.get_descontar()) }}</th>
+                <td scope="col">{{ beneficio.get_frequencia() }}</td>
+                <td scope="col">{{ True if beneficio.is_incluido_salario() else False }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    {% endif %}
 {% endblock %}

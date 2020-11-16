@@ -1,5 +1,7 @@
 from salary_simulation_API.models.impostos.calculador_de_imposto import Calculador_de_Imposto
+from salary_simulation_API.models.pessoas.pessoa import Pessoa
 from salary_simulation_API.models.modelos.contratos_interface import Contratos_Interface
+from salary_simulation_API.models.modelos.clt.beneficio import Beneficio
 
 
 class Contratos(Contratos_Interface):
@@ -8,11 +10,14 @@ class Contratos(Contratos_Interface):
     qualquer objeto que herde de Calculadora_de_Imposto_Interface.
     """
 
-    def __init__(self, salario_bruto, impostos, qtd_dependentes, lista_beneficios):
+    def __init__(self, pessoa, salario_bruto, impostos, qtd_dependentes, lista_beneficios):
         """
+        @type pessoa: Pessoa
         @type salario_bruto: float
         @type impostos: dict of Calculador_de_Imposto
+        @type lista_beneficios: list of Beneficio
         """
+        self._pessoa = pessoa
         self._impostos = impostos
         self._total_imposto = {}
         self._append_valor_imposto('total', 0.0, 0.0)
@@ -33,9 +38,10 @@ class Contratos(Contratos_Interface):
     def calcular_imposto_total(self):
         self._calcular_imposto_do_tipo(1)
 
+        self._calcular_imposto_do_tipo(2)
+        
         self._descontar_beneficios()
 
-        self._calcular_imposto_do_tipo(2)
         self._total_imposto['total']['aliquota'] = self._total_imposto['total']['valor'] / self.salario_bruto
 
     def _calcular_imposto_do_tipo(self, tipo_imposto):
@@ -57,7 +63,7 @@ class Contratos(Contratos_Interface):
     def _descontar_beneficios(self):
         for beneficio in self.lista_beneficios:
             if beneficio.is_incluido_salario():
-                self.descontar_salario(beneficio.get_valor())
+                self.descontar_salario(beneficio.get_descontar())
 
     def adicionar_beneficios(self, beneficio):
         self.lista_beneficios.append(beneficio)
@@ -76,3 +82,23 @@ class Contratos(Contratos_Interface):
 
     def get_salario_liquido(self):
         return self.salario_liquido
+
+    def get_nome_pessoa(self):
+        return self._pessoa.nome
+
+    def get_id(self):
+        return self._pessoa.id
+
+    def get_dependentes(self):
+        return self._pessoa.qtd_dependentes
+
+    def to_json(self):
+        serialized = {
+            'pessoa': self._pessoa.to_json(),
+            'salario_bruto': self.get_salario_bruto(),
+            'impostos': [{nome: imposto for nome, imposto in self._total_imposto.items()}],
+            'beneficios': [beneficio.to_json() for beneficio in self.lista_beneficios],
+            'salario_liquido': self.get_salario_liquido()
+        }
+        return serialized
+

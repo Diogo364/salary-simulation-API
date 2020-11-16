@@ -6,3 +6,6 @@ class Pessoa(ABC):
         self.nome = str(nome)
         self.id = str(personal_id)
         self.qtd_dependentes = int(qtd_dependentes)
+
+    def to_json(self):
+        return self.__dict__
