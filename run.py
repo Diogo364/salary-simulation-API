@@ -1,32 +1,8 @@
-import os
-import env_variables
+from env_variables import app, pf, clt, beneficios, dict_impostos
 from flask import render_template, request, url_for, redirect, session
-from salary_simulation_API.models.addapters.inss.adaptador_csv_inss import Adaptador_CSV_INSS
-from salary_simulation_API.models.addapters.ir.adaptador_csv_ir import Adaptador_CSV_IR
-from salary_simulation_API.models.impostos.imposto_de_renda import Imposto_de_Renda
-from salary_simulation_API.models.impostos.inss import INSS
 from salary_simulation_API.models.modelos.clt.beneficio import Beneficio
 from salary_simulation_API.models.modelos.clt.clt import CLT
 from salary_simulation_API.models.pessoas.pessoa_fisica import Pessoa_Fisica
-
-app = env_variables.app
-
-adaptador_inss = Adaptador_CSV_INSS()
-adaptador_inss.set_informacoes(os.path.join(env_variables.DATA_PATH, 'tabela_INSS.csv'))
-inss = INSS(adaptador_inss)
-
-adaptador_ir = Adaptador_CSV_IR()
-adaptador_ir.set_informacoes(os.path.join(env_variables.DATA_PATH, 'tabela_IR.csv'))
-ir = Imposto_de_Renda(adaptador_ir)
-
-dict_impostos = {
-    'inss': inss,
-    'ir': ir
-}
-
-pf = None
-clt = None
-beneficios = []
 
 
 @app.route('/')
@@ -67,6 +43,7 @@ def simular_clt():
             if all(value != '' for value in request.args.values()):
                 nome = request.args['inputBeneficioNome']
                 valor = request.args['inputBeneficioValor']
+                desconto = request.args['inputBeneficioDesconto']
                 frequencia = request.args['inputBeneficioFrequencia']
                 try:
                     descontar = bool(request.args['inputBeneficioDescontar'])
@@ -74,7 +51,7 @@ def simular_clt():
                     descontar = False
 
                 print('apended')
-                beneficios.append(Beneficio(nome, valor, frequencia, descontar))
+                beneficios.append(Beneficio(nome, valor, desconto, frequencia, descontar))
 
         if isinstance(pf, Pessoa_Fisica):
             print(len(beneficios))
@@ -92,6 +69,56 @@ def simular_clt():
 @app.route('/cadastro/PJ', methods=['GET', 'POST'])
 def simular_pj():
     pass
+
+
+@app.route('/API/pessoa_fisica', methods=['GET', 'POST'])
+def pessoa_fisica():
+    global pf
+
+    if request.method == 'GET':
+        try:
+            return pf.to_json()
+        except AttributeError:
+            return 'Inicialize uma pessoa antes de recupera-la'
+    else:
+        nome = request.json['nome']
+        cpf = request.json['cpf']
+        qtd_dependentes = 0 if 'qtd_dependentes' not in request.json else request.json['qtd_dependentes']
+    pf = Pessoa_Fisica(nome, cpf, qtd_dependentes)
+    return 'Pessoa Cadastrada com Sucesso'
+
+
+@app.route('/API/beneficios', methods=['GET', 'POST'])
+def cadastro_beneficios():
+    global beneficios
+
+    if request.method == 'GET':
+        return {'beneficios': [beneficio.to_json() for beneficio in beneficios]}
+    else:
+        inclusoes = 0
+        for beneficio in request.json:
+            nome = beneficio['nome']
+            valor = beneficio['valor']
+            desconto = beneficio['desconto']
+            frequencia = beneficio['frequencia']
+            is_incluido = beneficio['incluido_salario']
+            beneficios.append(Beneficio(nome, valor, desconto, frequencia, is_incluido))
+            inclusoes += 1
+        return f'Foram incluídos {inclusoes} beneficios'
+
+
+@app.route('/API/CLT', methods=['GET', 'POST'])
+def clt():
+    global clt
+    global pf
+    global beneficios
+
+    if request.method == 'GET':
+        return clt.to_json()
+    else:
+        salario_bruto = request.json['salario_bruto']
+        clt = CLT(pf, salario_bruto, dict_impostos, beneficios)
+        return 'CLT cadastrada com sucesso'
 
 
 if __name__ == '__main__':
